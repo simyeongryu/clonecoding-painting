@@ -13,6 +13,7 @@ const ctx = canvas.getContext("2d");
 // getElementByClassName 은 기본적으로 array-like object.
 const colors = document.querySelectorAll(".jsColor");
 const range = document.querySelector("#jsRange");
+const mode = document.querySelector("#jsMode");
 
 // 2) pixel을 다룰 수 있는 공간의 크기.
 canvas.width = 700;
@@ -24,6 +25,8 @@ ctx.lineWidth = 2.5; // 펜의 굵기
 
 // 그려지는 상태인지 아닌지.
 let painting = false;
+// 채우는 상태인지 아닌지.
+let filling = false;
 
 function stopPainting() {
     painting = false;
@@ -42,11 +45,11 @@ function onMouseMove(event) {
     const x = event.offsetX;
     const y = event.offsetY;
     // console.log(event, x, y); 값 확인
-    if (!painting) { 
+    if (!painting) { // painting === false 
         ctx.beginPath(); // 클릭한 지점부터 path 시작
         ctx.moveTo(x, y); // x, y로 지점 이동
         // 이동 이후엔 더이상 위의 구문은 작동하지 않는다. 
-    } else {
+    } else { // painting === true
         ctx.lineTo(x, y); // beginPath()부터 이동된 x, y까지 선으로 연결
         ctx.stroke();
     }
@@ -66,6 +69,17 @@ function handeRangeChange(event) {
     // console.log(event.target.value);
     const size = event.target.value;
     ctx.lineWidth = size;
+}
+
+function handeModeClick() {
+    if (filling === true) {
+        filling = false;
+        // innerText는 문자열 그대로를 추가. innerHTML 은 HTML 태그를 적용시켜서 추가.
+        mode.innerText = "FILL";
+    } else {
+        filling = true;
+        mode.innerText = "PAINT";
+    }
 }
 
 if (canvas) {
@@ -90,7 +104,11 @@ if (colors) {
     Array.from(colors).forEach(color => color.addEventListener("click", handleColorClick));
 }
 
-if(range) {
+if (range) {
     // range는 input 이벤트에 반응한다.
     range.addEventListener("input", handeRangeChange);
+}
+
+if (mode) {
+    mode.addEventListener("click", handeModeClick);
 }
