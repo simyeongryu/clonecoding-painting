@@ -7,6 +7,11 @@
  */
 const canvas = document.querySelector("#jsCanvas");
 const ctx = canvas.getContext("2d");
+// querySelector는 해당 셀렉터를 갖고 있는 요소 중 첫 번째 요소만 가져온다.
+// querySelectorAll하면 모든 요소를 Nodelist로 가져온다. 
+// https://developer.mozilla.org/ko/docs/Web/API/NodeList
+// getElementByClassName 은 기본적으로 array-like object.
+const colors = document.querySelectorAll(".jsColor");
 
 // 2) pixel을 다룰 수 있는 공간의 크기.
 canvas.width = 700;
@@ -22,7 +27,7 @@ let painting = false;
 function stopPainting() {
     painting = false;
 }
-
+  
 function startPainting() {
     painting = true;
 }
@@ -37,19 +42,23 @@ function onMouseMove(event) {
     const y = event.offsetY;
     // console.log(event, x, y); 값 확인
     if (!painting) { 
-        console.log("working !painting");
         ctx.beginPath(); // 클릭한 지점부터 path 시작
         ctx.moveTo(x, y); // x, y로 지점 이동
         // 이동 이후엔 더이상 위의 구문은 작동하지 않는다. 
     } else {
-        console.log("working stroke");
         ctx.lineTo(x, y); // beginPath()부터 이동된 x, y까지 선으로 연결
         ctx.stroke();
     }
 }
 
-function onMouseDown(event) {
-    painting = true;
+function handleColorClick(event) {
+    // event.target
+    // https://developer.mozilla.org/ko/docs/Web/API/Event/target
+    // console.log(event.target.style); 로 원하는 요소 확인
+    const color = event.target.style.backgroundColor;
+    // console.log(color); 색 확인
+    ctx.strokeStyle = color;
+
 }
 
 if (canvas) {
@@ -65,5 +74,8 @@ if (canvas) {
     canvas.addEventListener("mouseleave", stopPainting);
 }
 
-
-
+// Array.from(object) : object로부터 array를 만든다. 
+// console.log(Array.from(colors));
+// https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+// Array.from(colors) 배열의 요소 하나하나를 color라고 칭한다.(다른 값이어도 상관없음.) 그 요소 하나하나에 addEventListener 함수 실행.
+Array.from(colors).forEach(color => color.addEventListener("click", handleColorClick));
