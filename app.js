@@ -24,7 +24,7 @@ function stopPainting() {
 }
 
 function startPainting() {
-    paining = true;
+    painting = true;
 }
 
 function onMouseMove(event) {
@@ -36,11 +36,13 @@ function onMouseMove(event) {
     const x = event.offsetX;
     const y = event.offsetY;
     // console.log(event, x, y); 값 확인
-    if (!painting) {
+    if (!painting) { 
+        console.log("working !painting");
         ctx.beginPath(); // 클릭한 지점부터 path 시작
         ctx.moveTo(x, y); // x, y로 지점 이동
         // 이동 이후엔 더이상 위의 구문은 작동하지 않는다. 
     } else {
+        console.log("working stroke");
         ctx.lineTo(x, y); // beginPath()부터 이동된 x, y까지 선으로 연결
         ctx.stroke();
     }
