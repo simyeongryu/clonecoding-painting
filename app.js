@@ -4,6 +4,8 @@
  * canvas는 두 개의 사이즈를 가져야 한다.
  * 1) CSS, HTML로 정해주는 사이즈.
  * 2) pixel을 다룰 수 있는 공간의 크기.
+ * 
+ * 기본적으로 pixel을 다루기 때문에 이미지를 만들어준다. canvas 위에 마우스 우클릭을 하면 이미지를 저장할 수 있다.
  */
 const canvas = document.querySelector("#jsCanvas");
 const ctx = canvas.getContext("2d");
@@ -14,6 +16,7 @@ const ctx = canvas.getContext("2d");
 const colors = document.querySelectorAll(".jsColor");
 const range = document.querySelector("#jsRange");
 const mode = document.querySelector("#jsMode");
+const save = document.querySelector("#jsSave");
 
 // 뭔가 반복하게 되면 이런 변수를 만들어서 재활용. - 예) 기본값 등.
 const INITIAL_COLOR = "black";
@@ -22,6 +25,12 @@ const CANVAS_SIZE = 700;
 // 2) pixel을 다룰 수 있는 공간의 크기.
 canvas.width = CANVAS_SIZE;
 canvas.height = CANVAS_SIZE;
+
+/** canvas의 기본 배경은 하얀색으로 보이지만 이미지 저장을 하면 투명(transparent로 보인다.)
+ * 따라서 밑에 fillStyle을 기본 색으로 설정하기 전에 기본 배경을 하얀색으로 초기화한다.
+ */
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
 /** canvas context 기본값 설정 */
 ctx.strokeStyle = INITIAL_COLOR; // 사용자가 처음 사용하는 색.
@@ -95,7 +104,30 @@ function handleFillCanvas(event) {
         ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     }
 }
+// 우클릭 시 나오는 박스 발생 방지.
+function handleCtxMenu(e) {
+    e.preventDefault(); // 이벤트 발생 방지.
+}
 
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL
+function handeSave() {
+    // 데이터를 이미지로 받기.
+    const image = canvas.toDataURL("image/png"); // or "image/jpeg" 기본값 png
+    // console.log(image);
+    // body 태그에 append 하지 않는다. 즉 유저에게는 보이지 않는 a 태그를 생성하고, 그걸 클릭한다.
+    const link = document.createElement("a");
+    // HTML5에 추가된 속성. <a> 태그의 download 속성. 브라우저는 <a> 태그에 download 속성이 설정되어 있으면 링크가 가리키는 파일을 다운로드한다. 즉, 마치 링크 위에서 마우스 오른쪽 버튼을 클릭하고 "다른 이름으로 링크 저장"을 실행하는 것과 같다.
+    // href에는 저장할 링크를, download에는 저장될 파일의 이름을 설정
+    link.href = image;
+    link.download = "HelloCanvas";
+    // console.log(link);
+
+    // 가상의 a 태그 클릭
+    link.click();
+
+}
+
+// canvas 에서 벌어지는 일들
 if (canvas) {
     /* canvas 위에서 마우스가 움직이면 감지한다. */
     canvas.addEventListener("mousemove", onMouseMove);
@@ -108,6 +140,7 @@ if (canvas) {
     // onMouseLeave 함수를 만드는 것보다 stopPainting을 재활용하는 것이 좀더 효율적이다.
     canvas.addEventListener("mouseleave", stopPainting);
     canvas.addEventListener("click", handleFillCanvas);
+    canvas.addEventListener("contextmenu", handleCtxMenu); // canvas 마우스 우클릭 시 나오는 박스
 }
 
 // Array.from(object) : object로부터 array를 만든다. 
@@ -126,4 +159,8 @@ if (range) {
 
 if (mode) {
     mode.addEventListener("click", handeModeClick);
+}
+
+if (save) {
+    save.addEventListener("click", handeSave);
 }
