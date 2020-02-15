@@ -15,13 +15,19 @@ const colors = document.querySelectorAll(".jsColor");
 const range = document.querySelector("#jsRange");
 const mode = document.querySelector("#jsMode");
 
+// 뭔가 반복하게 되면 이런 변수를 만들어서 재활용. - 예) 기본값 등.
+const INITIAL_COLOR = "black";
+const CANVAS_SIZE = 700;
+
 // 2) pixel을 다룰 수 있는 공간의 크기.
-canvas.width = 700;
-canvas.height = 700;
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
 
 /** canvas context 기본값 설정 */
-ctx.strokeStyle = "black"; // 사용자가 처음 사용하는 색.
+ctx.strokeStyle = INITIAL_COLOR; // 사용자가 처음 사용하는 색.
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5; // 펜의 굵기
+
 
 // 그려지는 상태인지 아닌지.
 let painting = false;
@@ -62,6 +68,7 @@ function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
     // console.log(color); 색 확인
     ctx.strokeStyle = color;
+    ctx.fillStyle = color;
 }
 
 function handeRangeChange(event) {
@@ -75,10 +82,17 @@ function handeModeClick() {
     if (filling === true) {
         filling = false;
         // innerText는 문자열 그대로를 추가. innerHTML 은 HTML 태그를 적용시켜서 추가.
-        mode.innerText = "FILL";
+        mode.innerText = "PAINT";
     } else {
         filling = true;
-        mode.innerText = "PAINT";
+        mode.innerText = "FILL";
+    }
+}
+
+function handleFillCanvas(event) {
+    if (filling) { // filling 이 true 일 때만 작동. 이게 없으면 paint 모드에도 click 이벤트를 감지하여 화면을 채운다.
+    // fillRect(x, y, width, height) : x, y 좌표에 width, height 값을 갖는 사각형 출력
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     }
 }
 
@@ -93,6 +107,7 @@ if (canvas) {
     /** canvas 영역을 떠나는 순간을 감지한다. */
     // onMouseLeave 함수를 만드는 것보다 stopPainting을 재활용하는 것이 좀더 효율적이다.
     canvas.addEventListener("mouseleave", stopPainting);
+    canvas.addEventListener("click", handleFillCanvas);
 }
 
 // Array.from(object) : object로부터 array를 만든다. 
