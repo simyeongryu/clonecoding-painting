@@ -12,6 +12,7 @@ const ctx = canvas.getContext("2d");
 // https://developer.mozilla.org/ko/docs/Web/API/NodeList
 // getElementByClassName 은 기본적으로 array-like object.
 const colors = document.querySelectorAll(".jsColor");
+const range = document.querySelector("#jsRange");
 
 // 2) pixel을 다룰 수 있는 공간의 크기.
 canvas.width = 700;
@@ -58,7 +59,13 @@ function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
     // console.log(color); 색 확인
     ctx.strokeStyle = color;
+}
 
+function handeRangeChange(event) {
+    // HTML input tag 에서 설정한 min, max, step, value 조작 가능
+    // console.log(event.target.value);
+    const size = event.target.value;
+    ctx.lineWidth = size;
 }
 
 if (canvas) {
@@ -78,4 +85,12 @@ if (canvas) {
 // console.log(Array.from(colors));
 // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
 // Array.from(colors) 배열의 요소 하나하나를 color라고 칭한다.(다른 값이어도 상관없음.) 그 요소 하나하나에 addEventListener 함수 실행.
-Array.from(colors).forEach(color => color.addEventListener("click", handleColorClick));
+// html에서 가져온 값에 대해선 이런 식으로 유효성 검사를 하는 것이 좋다.
+if (colors) {
+    Array.from(colors).forEach(color => color.addEventListener("click", handleColorClick));
+}
+
+if(range) {
+    // range는 input 이벤트에 반응한다.
+    range.addEventListener("input", handeRangeChange);
+}
